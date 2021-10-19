@@ -15,7 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from charity_donation_app.view import IndexView, DonationView, RegisterView, LoginView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('/', IndexView.as_view()),
+    path('donation/', DonationView.as_view()),
+    path('register/', RegisterView.as_view()),
+    path('login/', LoginView.as_view()),
 ]
