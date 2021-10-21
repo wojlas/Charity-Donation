@@ -11,7 +11,11 @@ from charity_donation_app.models import Donation, Institution
 class IndexView(View):
     def get(self, request):
         ctx = {'bags': Donation.objects.count(),
-               'institutions': Institution.objects.count()}
+               'institutions': Institution.objects.count(),
+               'fundations': Institution.objects.filter(type='fundation'),
+               'no_gov': Institution.objects.filter(type='NGO'),
+               'locally': Institution.objects.filter(type='localy'),
+               }
         return render(request, 'charity_donation_app/index.html', ctx)
 
 class DonationView(View):
