@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 from django.views import View
 
@@ -25,6 +25,18 @@ class DonationView(View):
 class RegisterView(View):
     def get(self, request):
         return render(request, 'charity_donation_app/register.html')
+
+    def post(self, request):
+        first_name = str(request.POST.get("name"))
+        last_name = str(request.POST.get("surname"))
+        email = str(request.POST.get("email"))
+        pass1 = str(request.POST.get("password1"))
+        pass2 = str(request.POST.get("password2"))
+        if pass1 == pass2:
+            User.objects.create_user(first_name=first_name, last_name=last_name, email=email, password=pass1)
+            return redirect('/login/')
+        else:
+            return render(request, 'charity_donation_app/register.html')
 
 class LoginView(View):
     def get(self, request):
