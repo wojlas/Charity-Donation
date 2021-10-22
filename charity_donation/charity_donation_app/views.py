@@ -1,11 +1,8 @@
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
-
 from django.views import View
 
 from charity_donation_app.models import Donation, Institution
-
-
 
 
 class IndexView(View):
@@ -18,9 +15,11 @@ class IndexView(View):
                }
         return render(request, 'charity_donation_app/index.html', ctx)
 
+
 class DonationView(View):
     def get(self, request):
         return render(request, 'charity_donation_app/form.html')
+
 
 class RegisterView(View):
     def get(self, request):
@@ -37,6 +36,7 @@ class RegisterView(View):
             return redirect('/login/')
         else:
             return render(request, 'charity_donation_app/register.html')
+
 
 class LoginView(View):
     def get(self, request):

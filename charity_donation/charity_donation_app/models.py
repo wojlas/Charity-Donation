@@ -1,16 +1,16 @@
 from django.db import models
-from django.contrib.auth.models import User
+from accounts.models import MyUser
 
 class Category(models.Model):
     name = models.CharField(max_length=32, unique=True)
 
-class Institution(models.Model):
-    CHOICES = [
+
+CHOICES = [
         ('fundation', "Fundacja"),
         ('NGO', 'Organizacja pozarządowa'),
         ('localy', 'Zbiórka lokalna'),
     ]
-
+class Institution(models.Model):
     name = models.CharField(max_length=32)
     description = models.TextField()
     type = models.CharField(choices=CHOICES, default='fundation',max_length=64, null=True)
@@ -27,4 +27,5 @@ class Donation(models.Model):
     pick_up_date = models.DateField(auto_now_add=True, null=True)
     pick_up_time = models.TimeField(auto_now_add=True, null=True)
     pick_up_comment = models.TextField()
-    user = models.ForeignKey(User, null=True, default=None, on_delete=models.CASCADE)
+    # user = models.ForeignKey(MyUser, null=True, default=None, on_delete=models.CASCADE)
+    user = models.ForeignKey(MyUser, null=True, default=None, on_delete=models.SET_NULL)
