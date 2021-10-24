@@ -1,10 +1,11 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from accounts.models import CustomUser
 from django.shortcuts import render, redirect
 from django.views import View
 
-from charity_donation_app.models import Donation, Institution
+from charity_donation_app.models import Donation, Institution, Category
 
 
 class IndexView(View):
@@ -21,9 +22,12 @@ class IndexView(View):
         return render(request, 'charity_donation_app/index.html', ctx)
 
 
-class DonationView(View):
+class DonationView(LoginRequiredMixin ,View):
+    login_url = '/login/'
+
     def get(self, request):
-        return render(request, 'charity_donation_app/form.html')
+        ctx = {'categories': Category.objects.all()}
+        return render(request, 'charity_donation_app/form.html', ctx)
 
 
 class RegisterView(View):
@@ -63,6 +67,7 @@ class LoginView(View):
             return redirect('/register/')
 
 class LogoutView(View):
+    """ Logout user"""
     def get(self, request):
         logout(request)
         return redirect('/')
