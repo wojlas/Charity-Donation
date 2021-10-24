@@ -1,3 +1,5 @@
+from django.contrib.auth import authenticate, login
+
 from accounts.models import CustomUser
 from django.shortcuts import render, redirect
 from django.views import View
@@ -6,6 +8,9 @@ from charity_donation_app.models import Donation, Institution
 
 
 class IndexView(View):
+    """App landing page
+
+    Informations about organizations, how it work, statistics and more"""
     def get(self, request):
         ctx = {'bags': Donation.objects.count(),
                'institutions': Institution.objects.count(),
@@ -22,6 +27,7 @@ class DonationView(View):
 
 
 class RegisterView(View):
+    "Register new user"
     def get(self, request):
         return render(request, 'charity_donation_app/register.html')
 
@@ -39,5 +45,19 @@ class RegisterView(View):
 
 
 class LoginView(View):
+    "Login user using email as login"
     def get(self, request):
         return render(request, 'charity_donation_app/login.html')
+
+    def post(self, request):
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+        if CustomUser.objects.filter(email=email):
+            user = authenticate(username=email, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('/')
+            else:
+                return render(request, 'charity_donation_app/login.html')
+        else:
+            return redirect('/register/')
