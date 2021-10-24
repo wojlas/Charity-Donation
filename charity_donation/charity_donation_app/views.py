@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from accounts.models import CustomUser
 from django.shortcuts import render, redirect
 from django.views import View
 
@@ -32,7 +32,7 @@ class RegisterView(View):
         pass1 = str(request.POST.get("password1"))
         pass2 = str(request.POST.get("password2"))
         if pass1 == pass2:
-            User.objects.create_user(first_name=first_name, last_name=last_name, email=email, password=pass1)
+            CustomUser.objects.create_user(first_name=first_name, last_name=last_name, email=email, password=pass1)
             return redirect('/login/')
         else:
             return render(request, 'charity_donation_app/register.html')
