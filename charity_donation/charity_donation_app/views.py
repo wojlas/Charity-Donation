@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 
 from accounts.models import CustomUser
 from django.shortcuts import render, redirect
@@ -61,3 +61,8 @@ class LoginView(View):
                 return render(request, 'charity_donation_app/login.html')
         else:
             return redirect('/register/')
+
+class LogoutView(View):
+    def get(self, request):
+        logout(request)
+        return redirect('/')
