@@ -26,16 +26,16 @@ class RegisterView(View):
         return render(request, 'charity_donation_app/register.html')
 
     def post(self, request):
-        first_name = str(request.POST.get("name"))
-        last_name = str(request.POST.get("surname"))
-        email = str(request.POST.get("email"))
-        pass1 = str(request.POST.get("password1"))
-        pass2 = str(request.POST.get("password2"))
-        if pass1 == pass2:
-            CustomUser.objects.create_user(first_name=first_name, last_name=last_name, email=email, password=pass1)
-            return redirect('/login/')
-        else:
-            return render(request, 'charity_donation_app/register.html')
+        first_name = request.POST.get("name")
+        last_name = request.POST.get("surname")
+        email = request.POST.get("email")
+        pass1 = request.POST.get("password1")
+        pass2 = request.POST.get("password2")
+        # if pass1 == pass2:
+        CustomUser.objects.create_user(first_name=first_name, last_name=last_name, email=email, password=pass1)
+        return redirect('/login/')
+        # else:
+        #     return render(request, 'charity_donation_app/register.html')
 
 
 class LoginView(View):
