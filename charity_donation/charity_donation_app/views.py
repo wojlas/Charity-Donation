@@ -26,7 +26,8 @@ class DonationView(LoginRequiredMixin ,View):
     login_url = '/login/'
 
     def get(self, request):
-        ctx = {'categories': Category.objects.all()}
+        ctx = {'categories': Category.objects.all(),
+               'institutions': Institution.objects.all()}
         return render(request, 'charity_donation_app/form.html', ctx)
 
 
@@ -39,13 +40,13 @@ class RegisterView(View):
         first_name = request.POST.get("name")
         last_name = request.POST.get("surname")
         email = request.POST.get("email")
-        pass1 = request.POST.get("password1")
+        pass1 = request.POST.get("password")
         pass2 = request.POST.get("password2")
-        # if pass1 == pass2:
-        CustomUser.objects.create_user(first_name=first_name, last_name=last_name, email=email, password=pass1)
-        return redirect('/login/')
-        # else:
-        #     return render(request, 'charity_donation_app/register.html')
+        if pass1 == pass2:
+            CustomUser.objects.create_user(first_name=first_name, last_name=last_name, email=email, password=pass1)
+            return redirect('/login/')
+        else:
+            return render(request, 'charity_donation_app/register.html')
 
 
 class LoginView(View):
