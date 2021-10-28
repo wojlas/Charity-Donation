@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Sum, Count
 
 from accounts.models import CustomUser
 from django.shortcuts import render, redirect
@@ -13,8 +14,8 @@ class IndexView(View):
 
     Informations about organizations, how it work, statistics and more"""
     def get(self, request):
-        ctx = {'bags': Donation.objects.count(),
-               'institutions': Institution.objects.count(),
+        ctx = {'bags': sum([donation.quantity for donation in Donation.objects.all()]),
+               'institutions': sum([donation.institution for donation in Donation.objects.all()]),
                'fundations': Institution.objects.filter(type='fundation'),
                'no_gov': Institution.objects.filter(type='NGO'),
                'locally': Institution.objects.filter(type='localy'),
@@ -27,7 +28,7 @@ class DonationView(LoginRequiredMixin ,View):
 
     def get(self, request):
         ctx = {'categories': Category.objects.all(),
-               'institutions': Institution.objects.all()}
+               'institutions': Institution.objects.all().prefetch_related("categories")}
         return render(request, 'charity_donation_app/form.html', ctx)
 
 
