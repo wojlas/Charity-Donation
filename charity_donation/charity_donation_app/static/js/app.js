@@ -269,15 +269,13 @@ const filterFunction = function () {
     button.addEventListener("click", () => {
         step2.forEach(radio => {
             radio.parentElement.parentElement.hidden = true;
-        })
-        step1.forEach(checkbox => {
-            if (checkbox.checked) {
-                step2.forEach(radio => {
+            step1.forEach(checkbox => {
+                if (checkbox.checked) {
                     if (checkbox.name.toLowerCase() === radio.id.toLowerCase()) {
                         radio.parentElement.parentElement.hidden = false;
                     }
-                })
-            }
+                }
+            })
         })
     })
 }
@@ -288,30 +286,66 @@ filterFunction();
 const insertFunction = function () {
     /* Insert data from prev steps into final step fields
     */
-    let step4 = document.querySelector("div[data-step='4']");
-    if (step4.classList.contains("active")) {
-        let bags = document.querySelector("input[name=bags]");
-        let category = document.querySelectorAll("input[type=checkbox]");
-        let receiver = document.querySelectorAll("input[type=radio]");
-        let adress = document.querySelector("input[name=adress]");
-        let city = document.querySelector("input[name=city]");
-        let code = document.querySelector("input[name=postcode]");
-        let phoneNumber = document.querySelector("input[name=phone]");
-        let data = document.querySelector("input[name=data]");
-        let time = document.querySelector("input[name=time]");
-        let info = document.querySelector("textarea");
-        let button = document.querySelector(".next-step");
-        button.addEventListener("click", () => {
-            console.log(bags.value);
-            console.log(adress.value);
-            console.log(city.value);
-            console.log(code.value);
-            console.log(phoneNumber.value);
-            console.log(data.value);
-            console.log(time.value);
-            console.log(info.value);
-        })
-    }
+    let nextBtn = document.querySelectorAll(".next-step");
+    let prevBtn = document.querySelectorAll(".prev-step");
+    let index = 0; //index count the steps in the form //
+    nextBtn.forEach(next => {
+            next.addEventListener("click", () => {
+                index = index + 1;
+                if (index === 4) {
+                    //input data variables//
+                    let bags = document.querySelector("input[name=bags]");
+                    let category = document.querySelectorAll("input[type=checkbox]");
+                    let receiver = document.querySelectorAll("input[type=radio]");
+                    let adress = document.querySelector("input[name=address]");
+                    let city = document.querySelector("input[name=city]");
+                    let code = document.querySelector("input[name=postcode]");
+                    let phoneNumber = document.querySelector("input[name=phone]");
+                    let data = document.querySelector("input[name=data]");
+                    let time = document.querySelector("input[name=time]");
+                    let info = document.querySelector("textarea");
+                    //variables to complete//
+                    let summaryTextHow = document.querySelector(".icon-bag");
+                    let summaryTextWho = document.querySelector(".icon-hand");
+                    let summary = document.querySelector(".summary");
+                    let summaryAddress = summary.querySelector(".form-section--columns");
+                    let checkedCategories = '';
+                    let checkedOrganization = '';
+                    let donationAddress = document.createElement("ul");
+                    donationAddress.innerHTML = `<li>${adress.value}</li>
+                                                 <li>${city.value}</li>
+                                                 <li>${code.value}</li>
+                                                 <li>${phoneNumber.value}</li>`;
+                    let donationInfo = document.createElement("ul");
+                    donationInfo.innerHTML = `<li>${data.value}</li>
+                                              <li>${time.value}</li>
+                                              <li>${info.value}</li>`;
+                    category.forEach(el => {
+                        if (el.checked) {
+                            checkedCategories = `${checkedCategories} ${el.name.toLowerCase()},`;
+                        }
+                    })
+                    receiver.forEach(radio => {
+                        if (radio.checked) {
+                            checkedOrganization = radio.nextElementSibling.nextElementSibling.firstElementChild.textContent;
+                        }
+                    })
+                    summaryTextHow.nextElementSibling.textContent = `${bags.value} worki a w nich: ${checkedCategories.slice(0, -1)}`;
+                    summaryTextWho.nextElementSibling.textContent = `Odbiorca: ${checkedOrganization}`;
+                    summaryAddress.firstElementChild.replaceChild(donationAddress,
+                        summaryAddress.firstElementChild.firstElementChild.nextElementSibling);
+                    summaryAddress.lastElementChild.replaceChild(donationInfo,
+                        summaryAddress.firstElementChild.nextElementSibling.firstElementChild.nextElementSibling);
+                }
+            })
+        }
+    )
+    prevBtn.forEach(prev => {
+            prev.addEventListener("click", () => {
+                index = index - 1;
+            })
+        }
+    )
 }
 
 insertFunction()

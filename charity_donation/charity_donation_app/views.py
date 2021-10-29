@@ -14,8 +14,8 @@ class IndexView(View):
 
     Informations about organizations, how it work, statistics and more"""
     def get(self, request):
-        ctx = {'bags': sum([donation.quantity for donation in Donation.objects.all()]),
-               'institutions': sum([donation.institution for donation in Donation.objects.all()]),
+        ctx = {'bags': Donation.objects.all().annotate(Count('quantity', distinct=True)),
+               'institutions': Donation.objects.all().annotate(Count('institution', distinct=True)),
                'fundations': Institution.objects.filter(type='fundation'),
                'no_gov': Institution.objects.filter(type='NGO'),
                'locally': Institution.objects.filter(type='localy'),
