@@ -271,7 +271,7 @@ const filterFunction = function () {
             radio.parentElement.parentElement.hidden = true;
             step1.forEach(checkbox => {
                 if (checkbox.checked) {
-                    if (checkbox.name.toLowerCase() === radio.id.toLowerCase()) {
+                    if (checkbox.id.toLowerCase() === radio.id.toLowerCase()) {
                         radio.parentElement.parentElement.hidden = false;
                     }
                 }
@@ -322,7 +322,7 @@ const insertFunction = function () {
                                               <li>${info.value}</li>`;
                     category.forEach(el => {
                         if (el.checked) {
-                            checkedCategories = `${checkedCategories} ${el.name.toLowerCase()},`;
+                            checkedCategories = `${checkedCategories} ${el.id.toLowerCase()},`;
                         }
                     })
                     receiver.forEach(radio => {
@@ -336,6 +336,25 @@ const insertFunction = function () {
                         summaryAddress.firstElementChild.firstElementChild.nextElementSibling);
                     summaryAddress.lastElementChild.replaceChild(donationInfo,
                         summaryAddress.firstElementChild.nextElementSibling.firstElementChild.nextElementSibling);
+
+                    //create json and send it to backend//
+                    let jsonData = {
+                        'quantity': bags.value,
+                        'categories': [checkedCategories],
+                        'receiver': checkedOrganization,
+                        'address': adress.value,
+                        'city': city.value,
+                        'zip_code': code.value,
+                        'phone_number': phoneNumber.value,
+                        'data': data.value,
+                        'time': time.value,
+                        'pick_up_coment': info.value
+                    }
+                    fetch('', {
+                        method: 'POST',
+                        body: JSON.stringify(jsonData)
+                    })
+
                 }
             })
         }

@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Sum, Count
@@ -31,6 +33,25 @@ class DonationView(LoginRequiredMixin ,View):
                'institutions': Institution.objects.all().prefetch_related("categories")}
         return render(request, 'charity_donation_app/form.html', ctx)
 
+    def post(self, request):
+        json_data = json.loads(request.POST)
+        bags = json_data['quantity']
+        address = json_data['address']
+        city = json_data['city']
+        postcode = json_data['zip_code']
+        phone = json_data['phone_number']
+        data = json_data['data']
+        time = json_data['time']
+        info = json_data['pick_up_coment']
+        categories = json_data['categories']
+        receiver = json_data['receiver']
+        print(categories)
+        return redirect('/donation/success/')
+
+
+class DonationSaveView(View):
+    def get(self, request):
+        return render(request, 'charity_donation_app/form-confirmation.html')
 
 class RegisterView(View):
     "Register new user"
