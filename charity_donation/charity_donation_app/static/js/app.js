@@ -266,12 +266,25 @@ const filterFunction = function () {
     let step2 = document.querySelectorAll("input[type=radio]");
     let button = document.querySelector(".next-step");
 
+    // button.addEventListener("click", () => {
+    //     step2.forEach(radio => {
+    //         radio.parentElement.parentElement.hidden = true;
+    //         step1.forEach(checkbox => {
+    //             if (checkbox.checked) {
+    //                 if (checkbox.id.toLowerCase() === radio.id.slice(0, -1).toLowerCase()) {
+    //                     radio.parentElement.parentElement.hidden = false;
+    //                 }
+    //             }
+    //         })
+    //     })
+    // })
     button.addEventListener("click", () => {
         step2.forEach(radio => {
             radio.parentElement.parentElement.hidden = true;
             step1.forEach(checkbox => {
                 if (checkbox.checked) {
-                    if (checkbox.id.toLowerCase() === radio.id.toLowerCase()) {
+                    let radioText = radio.id.slice(0, -1).toLowerCase();
+                    if (radioText.includes(checkbox.id.toLowerCase())) {
                         radio.parentElement.parentElement.hidden = false;
                     }
                 }
@@ -311,6 +324,7 @@ const insertFunction = function () {
                     let summaryAddress = summary.querySelector(".form-section--columns");
                     let checkedCategories = '';
                     let checkedOrganization = '';
+                    let checkCategoriesArray = [];
                     let donationAddress = document.createElement("ul");
                     donationAddress.innerHTML = `<li>${adress.value}</li>
                                                  <li>${city.value}</li>
@@ -323,6 +337,7 @@ const insertFunction = function () {
                     category.forEach(el => {
                         if (el.checked) {
                             checkedCategories = `${checkedCategories} ${el.id.toLowerCase()},`;
+                            checkCategoriesArray.push(el.id.toLowerCase())
                         }
                     })
                     receiver.forEach(radio => {
@@ -330,7 +345,7 @@ const insertFunction = function () {
                             checkedOrganization = radio.nextElementSibling.nextElementSibling.firstElementChild.textContent;
                         }
                     })
-                    summaryTextHow.nextElementSibling.textContent = `${bags.value} worki a w nich: ${checkedCategories.slice(0, -1)}`;
+                    summaryTextHow.nextElementSibling.textContent = `${bags.value} worków a w nich: ${checkedCategories.slice(0, -1)}`;
                     summaryTextWho.nextElementSibling.textContent = `Odbiorca: ${checkedOrganization}`;
                     summaryAddress.firstElementChild.replaceChild(donationAddress,
                         summaryAddress.firstElementChild.firstElementChild.nextElementSibling);
@@ -340,7 +355,7 @@ const insertFunction = function () {
                     //create json and send it to backend//
                     let jsonData = {
                         'quantity': bags.value,
-                        'categories': [checkedCategories],
+                        'categories': checkCategoriesArray,
                         'receiver': checkedOrganization,
                         'address': adress.value,
                         'city': city.value,
@@ -350,6 +365,7 @@ const insertFunction = function () {
                         'time': time.value,
                         'pick_up_coment': info.value
                     }
+                    console.log(jsonData);
                     fetch('', {
                         method: 'POST',
                         body: JSON.stringify(jsonData)

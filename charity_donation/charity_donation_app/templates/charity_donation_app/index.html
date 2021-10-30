@@ -144,8 +144,9 @@
               <div class="title">{{ ngo.name }}</div>
               <div class="subtitle">{{ ngo.description}}</div>
             </div>
-
-            <div class="col"><div class="text">{{ ngo.categories }}</div></div>
+                {% for cat in ngo.categories.all %}
+            <div class="col"><div class="text">{{ cat.name }}</div></div>
+                    {% endfor %}
           </li>
         {% endfor %}
         </ul>
@@ -171,8 +172,9 @@
               <div class="title">{{ local.name }}</div>
               <div class="subtitle">{{ local.description }}</div>
             </div>
-
-            <div class="col"><div class="text">{{ local.categories }}</div></div>
+                {% for cat in local.categories.all %}
+            <div class="col"><div class="text">{{ cat.name }}</div></div>
+                    {% endfor %}
           </li>
         {% endfor %}
         </ul>
