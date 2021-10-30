@@ -283,7 +283,7 @@ const filterFunction = function () {
             radio.parentElement.parentElement.hidden = true;
             step1.forEach(checkbox => {
                 if (checkbox.checked) {
-                    let radioText = radio.id.slice(0, -1).toLowerCase();
+                    let radioText = radio.id;
                     if (radioText.includes(checkbox.id.toLowerCase())) {
                         radio.parentElement.parentElement.hidden = false;
                     }
@@ -345,7 +345,13 @@ const insertFunction = function () {
                             checkedOrganization = radio.nextElementSibling.nextElementSibling.firstElementChild.textContent;
                         }
                     })
-                    summaryTextHow.nextElementSibling.textContent = `${bags.value} worków a w nich: ${checkedCategories.slice(0, -1)}`;
+                    if (bags.value < 2) {
+                        summaryTextHow.nextElementSibling.textContent = `${bags.value} worek a w nim: ${checkedCategories.slice(0, -1)}`;
+                    } else if (bags.value >= 2 && bags.value <= 4) {
+                        summaryTextHow.nextElementSibling.textContent = `${bags.value} worki a w nich: ${checkedCategories.slice(0, -1)}`;
+                    } else if (bags.value >= 5) {
+                        summaryTextHow.nextElementSibling.textContent = `${bags.value} worków a w nich: ${checkedCategories.slice(0, -1)}`;
+                    }
                     summaryTextWho.nextElementSibling.textContent = `Odbiorca: ${checkedOrganization}`;
                     summaryAddress.firstElementChild.replaceChild(donationAddress,
                         summaryAddress.firstElementChild.firstElementChild.nextElementSibling);
@@ -365,11 +371,8 @@ const insertFunction = function () {
                         'time': time.value,
                         'pick_up_coment': info.value
                     }
-                    console.log(jsonData);
-                    fetch('', {
-                        method: 'POST',
-                        body: JSON.stringify(jsonData)
-                    })
+                    return jsonData;
+
 
                 }
             })
@@ -384,3 +387,14 @@ const insertFunction = function () {
 }
 
 insertFunction()
+
+const sendData = () => {
+    let submitBtn = document.querySelector("button[type=submit]");
+    console.log(submitBtn);
+    fetch('', {
+        method: 'POST',
+        body: JSON.stringify()
+    })
+}
+
+sendData()
