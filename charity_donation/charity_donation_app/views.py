@@ -1,13 +1,12 @@
-import json
+import json, urllib
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Sum, Count
-
-from accounts.models import CustomUser
+from django.db.models import Count
 from django.shortcuts import render, redirect
 from django.views import View
 
+from accounts.models import CustomUser
 from charity_donation_app.models import Donation, Institution, Category
 
 
@@ -15,6 +14,7 @@ class IndexView(View):
     """App landing page
 
     Informations about organizations, how it work, statistics and more"""
+
     def get(self, request):
         ctx = {'bags': Donation.objects.all().annotate(Count('quantity', distinct=True)),
                'institutions': Donation.objects.all().annotate(Count('institution', distinct=True)),
@@ -25,7 +25,7 @@ class IndexView(View):
         return render(request, 'charity_donation_app/index.html', ctx)
 
 
-class DonationView(LoginRequiredMixin ,View):
+class DonationView(LoginRequiredMixin, View):
     login_url = '/login/'
 
     def get(self, request):
@@ -45,16 +45,13 @@ class DonationView(LoginRequiredMixin ,View):
         info = json_data['pick_up_coment']
         categories = json_data['categories']
         receiver = json_data['receiver']
-        print(categories)
-        return redirect('/donation/success/')
-
-
-class DonationSaveView(View):
-    def get(self, request):
+        print(address)
         return render(request, 'charity_donation_app/form-confirmation.html')
+
 
 class RegisterView(View):
     "Register new user"
+
     def get(self, request):
         return render(request, 'charity_donation_app/register.html')
 
@@ -73,6 +70,7 @@ class RegisterView(View):
 
 class LoginView(View):
     "Login user using email as login"
+
     def get(self, request):
         return render(request, 'charity_donation_app/login.html')
 
@@ -89,8 +87,16 @@ class LoginView(View):
         else:
             return redirect('/register/')
 
+
 class LogoutView(View):
     """ Logout user"""
+
     def get(self, request):
         logout(request)
         return redirect('/')
+
+class UserProfileView(View):
+    """Profile page"""
+    def get(self, request):
+        ctx = {'donations': Donation.objects.filter(user=request.user).order_by('-pick_up_date', '-pick_up_time')}
+        return render(request, 'charity_donation_app/profile.html', ctx)

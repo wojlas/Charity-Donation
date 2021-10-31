@@ -266,18 +266,6 @@ const filterFunction = function () {
     let step2 = document.querySelectorAll("input[type=radio]");
     let button = document.querySelector(".next-step");
 
-    // button.addEventListener("click", () => {
-    //     step2.forEach(radio => {
-    //         radio.parentElement.parentElement.hidden = true;
-    //         step1.forEach(checkbox => {
-    //             if (checkbox.checked) {
-    //                 if (checkbox.id.toLowerCase() === radio.id.slice(0, -1).toLowerCase()) {
-    //                     radio.parentElement.parentElement.hidden = false;
-    //                 }
-    //             }
-    //         })
-    //     })
-    // })
     button.addEventListener("click", () => {
         step2.forEach(radio => {
             radio.parentElement.parentElement.hidden = true;
@@ -324,7 +312,7 @@ const insertFunction = function () {
                     let summaryAddress = summary.querySelector(".form-section--columns");
                     let checkedCategories = '';
                     let checkedOrganization = '';
-                    let checkCategoriesArray = [];
+
                     let donationAddress = document.createElement("ul");
                     donationAddress.innerHTML = `<li>${adress.value}</li>
                                                  <li>${city.value}</li>
@@ -337,7 +325,6 @@ const insertFunction = function () {
                     category.forEach(el => {
                         if (el.checked) {
                             checkedCategories = `${checkedCategories} ${el.id.toLowerCase()},`;
-                            checkCategoriesArray.push(el.id.toLowerCase())
                         }
                     })
                     receiver.forEach(radio => {
@@ -358,21 +345,6 @@ const insertFunction = function () {
                     summaryAddress.lastElementChild.replaceChild(donationInfo,
                         summaryAddress.firstElementChild.nextElementSibling.firstElementChild.nextElementSibling);
 
-                    //create json and send it to backend//
-                    let jsonData = {
-                        'quantity': bags.value,
-                        'categories': checkCategoriesArray,
-                        'receiver': checkedOrganization,
-                        'address': adress.value,
-                        'city': city.value,
-                        'zip_code': code.value,
-                        'phone_number': phoneNumber.value,
-                        'data': data.value,
-                        'time': time.value,
-                        'pick_up_coment': info.value
-                    }
-                    return jsonData;
-
 
                 }
             })
@@ -390,11 +362,66 @@ insertFunction()
 
 const sendData = () => {
     let submitBtn = document.querySelector("button[type=submit]");
-    console.log(submitBtn);
-    fetch('', {
-        method: 'POST',
-        body: JSON.stringify()
+    submitBtn.addEventListener("click", () => {
+        let bags = document.querySelector("input[name=bags]");
+        let category = document.querySelectorAll("input[type=checkbox]");
+        let receiver = document.querySelectorAll("input[type=radio]");
+        let adress = document.querySelector("input[name=address]");
+        let city = document.querySelector("input[name=city]");
+        let code = document.querySelector("input[name=postcode]");
+        let phoneNumber = document.querySelector("input[name=phone]");
+        let data = document.querySelector("input[name=data]");
+        let time = document.querySelector("input[name=time]");
+        let info = document.querySelector("textarea");
+        let checkCategories = [];
+        let organization = '';
+
+        category.forEach(el => {
+            if (el.checked) {
+                checkCategories.push(el.id.toLowerCase())
+            }
+        })
+        receiver.forEach(radio => {
+            if (radio.checked) {
+                organization = radio.nextElementSibling.nextElementSibling.firstElementChild.textContent;
+            }
+        })
+
+        //create json and send it to backend//
+        const jsonData = {
+            "quantity":bags.value,
+            "categories":checkCategories,
+            "receiver": organization,
+            "address": adress.value,
+            "city": city.value,
+            "zip_code": code.value,
+            "phone_number": phoneNumber.value,
+            "data": data.value,
+            "time": time.value,
+            "pick_up_coment": info.value
+        }
+
+        console.log(jsonData);
+
+        fetch('', {
+            method: 'POST',
+            body: JSON.stringify(jsonData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
     })
 }
 
 sendData()
+
+const donationArchiveFunc = function () {
+    let table = document.querySelector(".donation-history[table]");
+    console.log(table);
+}
+
+donationArchiveFunc()
