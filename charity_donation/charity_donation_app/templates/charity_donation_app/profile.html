@@ -62,7 +62,7 @@
                 {% if donation.is_taken %}
                     <td id="taken">Odebrano</td>
                 {% else %}
-                    <td id="waiting"><button value="Odebrano" class="archiveBtn">Archiwizuj</button> </td>
+                    <td id="waiting"><button value="Odebrano" class="archiveBtn" onclick="donationArchiveFunc()">Archiwizuj</button> </td>
                 {% endif %}
                 </tr>
                 {% endfor %}

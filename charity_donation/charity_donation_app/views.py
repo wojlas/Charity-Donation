@@ -34,17 +34,17 @@ class DonationView(LoginRequiredMixin, View):
         return render(request, 'charity_donation_app/form.html', ctx)
 
     def post(self, request):
-        json_data = json.loads(request.POST)
-        bags = json_data['quantity']
-        address = json_data['address']
-        city = json_data['city']
-        postcode = json_data['zip_code']
-        phone = json_data['phone_number']
-        data = json_data['data']
-        time = json_data['time']
-        info = json_data['pick_up_coment']
-        categories = json_data['categories']
-        receiver = json_data['receiver']
+        json_data = json.loads(request.POST.decode('utf-8'))
+        bags = json_data.get('quantity')
+        address = json_data.get('address')
+        city = json_data.get('city')
+        postcode = json_data.get('zip_code')
+        phone = json_data.get('phone_number')
+        data = json_data.get('data')
+        time = json_data.get('time')
+        info = json_data.get('pick_up_coment')
+        categories = json_data.get('categories')
+        receiver = json_data.get('receiver')
         print(address)
         return render(request, 'charity_donation_app/form-confirmation.html')
 
@@ -100,3 +100,45 @@ class UserProfileView(View):
     def get(self, request):
         ctx = {'donations': Donation.objects.filter(user=request.user).order_by('-pick_up_date', '-pick_up_time')}
         return render(request, 'charity_donation_app/profile.html', ctx)
+
+class UserSettingsView(View):
+    def get(self, request):
+        return render(request, 'charity_donation_app/settings.html')
+
+    def post(self, request):
+        password = request.POST.get('password')
+        email = request.POST.get('email')
+        firstname = request.POST.get('first-name')
+        lastname = request.POST.get('last-name')
+
+        user = request.user
+        if password == user.password:
+            user.email = email
+            user.first_name = firstname
+            user.last_name = lastname
+            user.save()
+            cxt = {'error': 'Zapisano'}
+            return render(request, 'charity_donation_app/settings.html', cxt)
+        else:
+            cxt = {'error': 'Niepoprawne hasło'}
+            return render(request, 'charity_donation_app/settings.html', cxt)
+
+class PasswordView(View):
+    def post(self, request):
+        user = request.user
+        old_pas = request.POST.get('old-password')
+        pass1 = request.POST.get('password1')
+        pass2 = request.POST.get('password2')
+        if user.password == old_pas:
+            if pass1 == pass2:
+                user.set_password = pass1
+                user.save()
+                ctx = {'passalert': 'Hasło zmienione'}
+                return redirect('/profile/settings/', ctx)
+            else:
+                ctx = {'passalert': 'Pola 2 i 3 muszą być identyczne'}
+                return redirect('/profile/settings/', ctx)
+        else:
+            ctx = {'passalert': 'Złe hasło'}
+            return redirect('/profile/settings/', ctx)
+

@@ -373,12 +373,12 @@ const sendData = () => {
         let data = document.querySelector("input[name=data]");
         let time = document.querySelector("input[name=time]");
         let info = document.querySelector("textarea");
-        let checkCategories = [];
+        let checkCategories = '';
         let organization = '';
 
         category.forEach(el => {
             if (el.checked) {
-                checkCategories.push(el.id.toLowerCase())
+                checkCategories = checkCategories + el.id.toLowerCase() + ' ';
             }
         })
         receiver.forEach(radio => {
@@ -388,17 +388,34 @@ const sendData = () => {
         })
 
         //create json and send it to backend//
+        // const jsonData = `{
+        //     "form": {
+        //         "quantity":"${bags.value}",
+        //         "categories":"${checkCategories.slice(0,-1)}",
+        //         "receiver": "${organization}",
+        //         "address": "${adress.value}",
+        //         "city": "${city.value}",
+        //         "zip_code": "${code.value}",
+        //         "phone_number": "${phoneNumber.value}",
+        //         "data": "${data.value}",
+        //         "time": "${time.value}",
+        //         "pick_up_coment": "${info.value}"
+        //         }
+        // }`
+
         const jsonData = {
-            "quantity":bags.value,
-            "categories":checkCategories,
-            "receiver": organization,
-            "address": adress.value,
-            "city": city.value,
-            "zip_code": code.value,
-            "phone_number": phoneNumber.value,
-            "data": data.value,
-            "time": time.value,
-            "pick_up_coment": info.value
+            "form": {
+                "quantity":bags.value,
+                "categories":checkCategories.slice(0,-1),
+                "receiver": organization,
+                "address": adress.value,
+                "city": city.value,
+                "zip_code": code.value,
+                "phone_number": phoneNumber.value,
+                "data": data.value,
+                "time": time.value,
+                "pick_up_coment": info.value
+                }
         }
 
         console.log(jsonData);
@@ -419,9 +436,8 @@ const sendData = () => {
 
 sendData()
 
-const donationArchiveFunc = function () {
-    let table = document.querySelector(".donation-history[table]");
-    console.log(table);
-}
-
-donationArchiveFunc()
+// const donationArchiveFunc = function () {
+//     let table = document.querySelector(".donation-history[table]");
+//     console.log(table);
+// }
+// donationArchiveFunc()

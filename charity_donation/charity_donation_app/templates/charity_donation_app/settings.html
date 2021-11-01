@@ -1,0 +1,63 @@
+{% extends 'charity_donation_app/base.html' %}
+{% load static %}
+
+{% block content %}
+    <header class="header--main-page">
+        <nav class="container container--70">
+            <ul class="nav--actions">
+                {% if user.is_authenticated %}
+                    <li class="logged-user">
+                        Witaj {{ user.first_name }}
+                        <ul class="dropdown">
+                            <li><a href="{% url 'profile' %}">Profil</a></li>
+                            <li><a href="{% url 'settings' %}">Ustawienia</a></li>
+                            {% if user.is_superuser %}
+                                <li><a href="{% url 'admin:index' %}">Panel administracyjny</a></li>
+                            {% endif %}
+                            <li><a href="{% url 'logout' %}">Wyloguj</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li><a href="{% url 'login' %}" class="btn btn--small btn--without-border">Zaloguj</a></li>
+                    <li><a href="{% url 'register' %}" class="btn btn--small btn--highlighted">Załóż konto</a></li>
+                {% endif %}
+            </ul>
+
+            <ul>
+                <li><a href="{% url 'index' %}" class="btn btn--without-border active">Start</a></li>
+                <li><a href="{% url 'index' %}#steps" class="btn btn--without-border">O co chodzi?</a></li>
+                <li><a href="{% url 'index' %}#about-us" class="btn btn--without-border">O nas</a></li>
+                <li><a href="{% url 'index' %}#help" class="btn btn--without-border">Fundacje i organizacje</a></li>
+                <li><a href="{% url 'donation' %}" class="btn btn--without-border">Przekaż dary</a></li>
+                <li><a href="{% url 'index' %}#contact" class="btn btn--without-border">Kontakt</a></li>
+            </ul>
+        </nav>
+
+        <div class="slogan container container--90">
+            <div class="slogan--item">
+                <h1>
+                    Zmień dane
+                    <form method="post">
+                        {% csrf_token %}
+                        <label>Podaj hasło: <input type="password" name="password"/><br></label>
+                        <label>Email: <input type="text" name="email" value="{{ user.email }}"/><br></label>
+                        <label>Imię: <input type="text" name="first-name" value="{{ user.first_name }}"/><br></label>
+                        <label>Nazwisko: <input type="text" name="last-name" value="{{ user.last_name }}"/><br></label>
+                        <br>{{ error }} <br>
+                        <label><br><input type="submit" value="Zapisz"></label>
+                    </form>
+
+                    <br>Zmień hasło
+                    <form action="{% url 'pass' %}" method="post">
+                        {% csrf_token %}
+                        <label>Stare hasło: <input type="password" name="old-password"><br></label>
+                        <label>Nowe hasło: <input type="password" name="password1"><br></label>
+                        <label>Powtórz hasło: <input type="password" name="password2"><br></label>
+                        <br>{{ passalert }}
+                        <label><br><input type="submit" value="Zmień"><br></label>
+                    </form>
+                </h1>
+            </div>
+        </div>
+    </header>
+{% endblock %}
