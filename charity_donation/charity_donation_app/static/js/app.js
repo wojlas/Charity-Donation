@@ -266,19 +266,21 @@ const filterFunction = function () {
     let step2 = document.querySelectorAll("input[type=radio]");
     let button = document.querySelector(".next-step");
 
-    button.addEventListener("click", () => {
-        step2.forEach(radio => {
-            radio.parentElement.parentElement.hidden = true;
-            step1.forEach(checkbox => {
-                if (checkbox.checked) {
-                    let radioText = radio.id;
-                    if (radioText.includes(checkbox.id.toLowerCase())) {
-                        radio.parentElement.parentElement.hidden = false;
+    if (button) {
+        button.addEventListener("click", () => {
+            step2.forEach(radio => {
+                radio.parentElement.parentElement.hidden = true;
+                step1.forEach(checkbox => {
+                    if (checkbox.checked) {
+                        let radioText = radio.id;
+                        if (radioText.includes(checkbox.id.toLowerCase())) {
+                            radio.parentElement.parentElement.hidden = false;
+                        }
                     }
-                }
+                })
             })
         })
-    })
+    }
 }
 
 
@@ -387,57 +389,83 @@ const sendData = () => {
             }
         })
 
-        //create json and send it to backend//
-        // const jsonData = `{
-        //     "form": {
-        //         "quantity":"${bags.value}",
-        //         "categories":"${checkCategories.slice(0,-1)}",
-        //         "receiver": "${organization}",
-        //         "address": "${adress.value}",
-        //         "city": "${city.value}",
-        //         "zip_code": "${code.value}",
-        //         "phone_number": "${phoneNumber.value}",
-        //         "data": "${data.value}",
-        //         "time": "${time.value}",
-        //         "pick_up_coment": "${info.value}"
-        //         }
-        // }`
-
         const jsonData = {
-            "form": {
-                "quantity":bags.value,
-                "categories":checkCategories.slice(0,-1),
-                "receiver": organization,
-                "address": adress.value,
-                "city": city.value,
-                "zip_code": code.value,
-                "phone_number": phoneNumber.value,
-                "data": data.value,
-                "time": time.value,
-                "pick_up_coment": info.value
-                }
+            quantity: bags.value,
+            categories: checkCategories.slice(0, -1),
+            receiver: organization,
+            address: adress.value,
+            city: city.value,
+            zip_code: code.value,
+            phone_number: phoneNumber.value,
+            data: data.value,
+            time: time.value,
+            pick_up_coment: info.value
         }
 
-        console.log(jsonData);
-
-        fetch('', {
+        fetch('http://127.0.0.1:8000/donation/', {
+            headers: {
+                'Content-Type': 'application/json',
+                'charset': 'UTF-8'
+            },
             method: 'POST',
-            body: JSON.stringify(jsonData)
+            body: JSON.stringify(jsonData),
+            redirect: 'follow'
         })
             .then(response => response.json())
             .then(data => {
+                window.location.href = '/';
                 console.log('Success:', data);
             })
             .catch((error) => {
                 console.error('Error:', error);
             });
+        // fetch('http://127.0.0.1:8000/donation/')
+        //     .then(response => response.json())
+        //     .then((data => console.log(data)))
+
     })
 }
 
 sendData()
 
-// const donationArchiveFunc = function () {
-//     let table = document.querySelector(".donation-history[table]");
-//     console.log(table);
-// }
-// donationArchiveFunc()
+
+const donationArchiveFunc = function () {
+    let table = document.querySelector(".donation-history").children[2].firstElementChild;
+    let button = table.querySelector("button");
+    let buttonRow = button.parentElement.parentElement;
+    let jsonData = {
+        is_active: 'True',
+        institution_id: buttonRow.id
+    }
+    fetch('http://127.0.0.1:8000/profile/', {
+        headers: {
+            'Content-Type': 'application/json',
+            'charset': 'UTF-8'
+        },
+        method: 'POST',
+        body: JSON.stringify(jsonData),
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    buttonRow.classList.add('taken');
+}
+
+const archiveMark= function () {
+    let archiveRow = document.querySelectorAll(".taken");
+    archiveRow.forEach(row=> {
+        let cell = row.querySelectorAll("td");
+        cell.forEach(el=> {
+            el.style.fontColor = '#008080';
+            el.style.background = 'grey';
+            console.log(el.style);
+        })
+    })
+}
+
+
+archiveMark()

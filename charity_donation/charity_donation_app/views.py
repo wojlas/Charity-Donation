@@ -1,10 +1,15 @@
 import json, urllib
+from datetime import datetime
 
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
+from django.utils.decorators import method_decorator
 from django.views import View
+from django.views.decorators.csrf import csrf_exempt
 
 from accounts.models import CustomUser
 from charity_donation_app.models import Donation, Institution, Category
@@ -24,7 +29,7 @@ class IndexView(View):
                }
         return render(request, 'charity_donation_app/index.html', ctx)
 
-
+@method_decorator(csrf_exempt, name='dispatch')
 class DonationView(LoginRequiredMixin, View):
     login_url = '/login/'
 
@@ -34,19 +39,29 @@ class DonationView(LoginRequiredMixin, View):
         return render(request, 'charity_donation_app/form.html', ctx)
 
     def post(self, request):
-        json_data = json.loads(request.POST.decode('utf-8'))
-        bags = json_data.get('quantity')
-        address = json_data.get('address')
-        city = json_data.get('city')
-        postcode = json_data.get('zip_code')
-        phone = json_data.get('phone_number')
-        data = json_data.get('data')
-        time = json_data.get('time')
-        info = json_data.get('pick_up_coment')
-        categories = json_data.get('categories')
-        receiver = json_data.get('receiver')
-        print(address)
+
+        json_data = json.loads(request.body.decode('utf-8'))
+        bags = json_data['quantity']
+        address = json_data['address']
+        city = json_data['city']
+        postcode = json_data['zip_code']
+        phone = json_data['phone_number']
+        data = json_data['data']
+        time = json_data['time']
+        info = json_data['pick_up_coment']
+        categories = json_data['categories']
+        receiver = json_data['receiver']
+        institution = Institution.objects.get(name=receiver)
+        new_donation = Donation.objects.create(quantity=int(bags), institution=institution, adress=address,
+                                phone_number=int(phone), zip_code=postcode, pick_up_comment=info, pick_up_time=datetime.strptime(time, '%H:%M').time(),
+                                pick_up_date=datetime.strptime(data, '%Y-%m-%d').date() ,city=city, user=request.user)
+        for category in categories.split():
+            cat1 = Category.objects.get(name=category.capitalize())
+            new_donation.categories.add(cat1)
+        new_donation.save()
+        success_response = {'form': 'form-confirmation.html'}
         return render(request, 'charity_donation_app/form-confirmation.html')
+        # return JsonResponse(success_response)
 
 
 class RegisterView(View):
@@ -95,24 +110,36 @@ class LogoutView(View):
         logout(request)
         return redirect('/')
 
+@method_decorator(csrf_exempt, name='dispatch')
 class UserProfileView(View):
     """Profile page"""
     def get(self, request):
         ctx = {'donations': Donation.objects.filter(user=request.user).order_by('-pick_up_date', '-pick_up_time')}
         return render(request, 'charity_donation_app/profile.html', ctx)
 
+    def post(self, request):
+        json_data = json.loads(request.body.decode('utf-8'))
+        institution_id = json_data['institution_id']
+        is_active = json_data['is_active']
+        active = ''.join(e for e in is_active if e.isalnum())
+        donation = Donation.objects.get(pk=int(institution_id))
+        donation.is_taken = active
+        donation.save()
+        return render(request, 'charity_donation_app/profile.html')
+
 class UserSettingsView(View):
     def get(self, request):
         return render(request, 'charity_donation_app/settings.html')
 
     def post(self, request):
-        password = request.POST.get('password')
+        hashed_password = make_password(request.POST.get('password'))
         email = request.POST.get('email')
         firstname = request.POST.get('first-name')
         lastname = request.POST.get('last-name')
 
         user = request.user
-        if password == user.password:
+        user_password = user.check_password
+        if hashed_password == user_password:
             user.email = email
             user.first_name = firstname
             user.last_name = lastname
@@ -127,9 +154,10 @@ class PasswordView(View):
     def post(self, request):
         user = request.user
         old_pas = request.POST.get('old-password')
+        hashed_password = make_password(old_pas)
         pass1 = request.POST.get('password1')
         pass2 = request.POST.get('password2')
-        if user.password == old_pas:
+        if user.password == hashed_password:
             if pass1 == pass2:
                 user.set_password = pass1
                 user.save()

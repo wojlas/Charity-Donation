@@ -45,8 +45,9 @@
     </header>
     <div class="donation-history" align="center">
         <h1>Historia datków</h1><br>
-            <table>
-                <tr align="center" class="table-header">
+        <h3>
+        <table width="75%">
+                <tr align="center" class="table-header" bgcolor="#a9a9a9">
                     <td>Worki(60l)</td>
                     <td>Organizacja</td>
                     <td>Kategoria</td>
@@ -54,11 +55,11 @@
                     <td></td>
                 </tr>
                 {% for donation in donations %}
-                <tr align="center">
-                    <td>{{ donation.quantity }}</td>
-                    <td>{{ donation.institution.name }}</td>
-                    <td>{% for cat in donation.categories.all %}{{ cat.name }} {% endfor %}</td>
-                    <td>{{ donation.pick_up_date }}</td>
+                <tr align="center" id="{{ donation.pk }}" {% if donation.is_taken %}class="taken"{% endif %}>
+                    <td id="quantity">{{ donation.quantity }}</td>
+                    <td id="institution-name">{{ donation.institution.name }}</td>
+                    <td id="institution-categories">{% for cat in donation.categories.all %}{{ cat.name }} {% endfor %}</td>
+                    <td id="pick-up-date">{{ donation.pick_up_date }}</td>
                 {% if donation.is_taken %}
                     <td id="taken">Odebrano</td>
                 {% else %}
@@ -67,6 +68,7 @@
                 </tr>
                 {% endfor %}
             </table>
+        </h3>
     </div>
 
 {% endblock %}
