@@ -413,8 +413,11 @@ const sendData = () => {
         })
             .then(response => response.json())
             .then(data => {
-                window.location.href = '/';
                 console.log('Success:', data);
+                // window.location.href = 'http://127.0.0.1:8000/donation/success/';
+
+                window.location.replace("http://127.0.0.1:8000/donation/success/");
+
             })
             .catch((error) => {
                 console.error('Error:', error);
@@ -440,14 +443,16 @@ const donationArchiveFunc = function () {
     fetch('http://127.0.0.1:8000/profile/', {
         headers: {
             'Content-Type': 'application/json',
-            'charset': 'UTF-8'
+            'charset': 'UTF-8',
         },
         method: 'POST',
         body: JSON.stringify(jsonData),
+        redirect: 'follow'
     })
         .then(response => response.json())
         .then(data => {
             console.log('Success:', data);
+            window.location.reload(true);
         })
         .catch((error) => {
             console.error('Error:', error);
@@ -455,14 +460,13 @@ const donationArchiveFunc = function () {
     buttonRow.classList.add('taken');
 }
 
-const archiveMark= function () {
+const archiveMark = function () {
     let archiveRow = document.querySelectorAll(".taken");
-    archiveRow.forEach(row=> {
+    archiveRow.forEach(row => {
         let cell = row.querySelectorAll("td");
-        cell.forEach(el=> {
+        cell.forEach(el => {
             el.style.fontColor = '#008080';
             el.style.background = 'grey';
-            console.log(el.style);
         })
     })
 }

@@ -2,7 +2,7 @@ import json, urllib
 from datetime import datetime
 
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count
 from django.http import JsonResponse
@@ -22,7 +22,7 @@ class IndexView(View):
 
     def get(self, request):
         ctx = {'bags': Donation.objects.all().annotate(Count('quantity', distinct=True)),
-               'institutions': Donation.objects.all().annotate(Count('institution', distinct=True)),
+               'institutions': Donation.objects.values('institution').distinct(),
                'fundations': Institution.objects.filter(type='fundation'),
                'no_gov': Institution.objects.filter(type='NGO'),
                'locally': Institution.objects.filter(type='localy'),
@@ -59,9 +59,14 @@ class DonationView(LoginRequiredMixin, View):
             cat1 = Category.objects.get(name=category.capitalize())
             new_donation.categories.add(cat1)
         new_donation.save()
-        success_response = {'form': 'form-confirmation.html'}
+        success_response = {'form': 'form-confirmation.html',
+                            'url': '/donation/success/'}
+        # return redirect('/donation/success')
+        return JsonResponse(success_response)
+
+class DonationDoneView(View):
+    def get(self, request):
         return render(request, 'charity_donation_app/form-confirmation.html')
-        # return JsonResponse(success_response)
 
 
 class RegisterView(View):
@@ -114,32 +119,32 @@ class LogoutView(View):
 class UserProfileView(View):
     """Profile page"""
     def get(self, request):
-        ctx = {'donations': Donation.objects.filter(user=request.user).order_by('-pick_up_date', '-pick_up_time')}
+        ctx = {'donations': Donation.objects.filter(user=request.user).order_by('is_taken', 'pick_up_date', '-pick_up_time')}
         return render(request, 'charity_donation_app/profile.html', ctx)
 
     def post(self, request):
         json_data = json.loads(request.body.decode('utf-8'))
         institution_id = json_data['institution_id']
         is_active = json_data['is_active']
-        active = ''.join(e for e in is_active if e.isalnum())
+        active = ''.join(e for e in is_active if e.isalnum()) #is_active == True
         donation = Donation.objects.get(pk=int(institution_id))
         donation.is_taken = active
         donation.save()
-        return render(request, 'charity_donation_app/profile.html')
+        return JsonResponse({})
 
 class UserSettingsView(View):
     def get(self, request):
         return render(request, 'charity_donation_app/settings.html')
 
     def post(self, request):
-        hashed_password = make_password(request.POST.get('password'))
+        password = request.POST.get('password')
         email = request.POST.get('email')
         firstname = request.POST.get('first-name')
         lastname = request.POST.get('last-name')
 
         user = request.user
-        user_password = user.check_password
-        if hashed_password == user_password:
+
+        if user.check_password(password):
             user.email = email
             user.first_name = firstname
             user.last_name = lastname
@@ -154,12 +159,11 @@ class PasswordView(View):
     def post(self, request):
         user = request.user
         old_pas = request.POST.get('old-password')
-        hashed_password = make_password(old_pas)
         pass1 = request.POST.get('password1')
         pass2 = request.POST.get('password2')
-        if user.password == hashed_password:
+        if user.check_password(old_pas):
             if pass1 == pass2:
-                user.set_password = pass1
+                user.set_password(pass1)
                 user.save()
                 ctx = {'passalert': 'Hasło zmienione'}
                 return redirect('/profile/settings/', ctx)
