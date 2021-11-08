@@ -451,7 +451,7 @@ const donationArchiveFunc = function () {
         .catch((error) => {
             console.error('Error:', error);
         });
-    buttonRow.classList.add('taken');
+
 }
 
 const archiveMark = function () {
