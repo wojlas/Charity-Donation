@@ -414,9 +414,7 @@ const sendData = () => {
             .then(response => response.json())
             .then(data => {
                 console.log('Success:', data);
-                // window.location.href = 'http://127.0.0.1:8000/donation/success/';
-
-                window.location.replace("http://127.0.0.1:8000/donation/success/");
+                window.location.href = 'http://127.0.0.1:8000/donation/success/';
 
             })
             .catch((error) => {

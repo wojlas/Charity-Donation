@@ -130,7 +130,7 @@ class UserProfileView(View):
         donation = Donation.objects.get(pk=int(institution_id))
         donation.is_taken = active
         donation.save()
-        return JsonResponse({})
+        return JsonResponse({'data': 'redirect'})
 
 class UserSettingsView(View):
     def get(self, request):
