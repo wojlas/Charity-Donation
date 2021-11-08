@@ -51,12 +51,15 @@ class DonationView(LoginRequiredMixin, View):
         info = json_data['pick_up_coment']
         categories = json_data['categories']
         receiver = json_data['receiver']
+        print(categories)
         institution = Institution.objects.get(name=receiver)
+
         new_donation = Donation.objects.create(quantity=int(bags), institution=institution, adress=address,
                                 phone_number=int(phone), zip_code=postcode, pick_up_comment=info, pick_up_time=datetime.strptime(time, '%H:%M').time(),
                                 pick_up_date=datetime.strptime(data, '%Y-%m-%d').date() ,city=city, user=request.user)
-        for category in categories.split():
-            cat1 = Category.objects.get(name=category.capitalize())
+
+        for category in categories:
+            cat1 = Category.objects.get(pk =int(category))
             new_donation.categories.add(cat1)
         new_donation.save()
         success_response = {'form': 'form-confirmation.html',

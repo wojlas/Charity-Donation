@@ -273,7 +273,7 @@ const filterFunction = function () {
                 step1.forEach(checkbox => {
                     if (checkbox.checked) {
                         let radioText = radio.id;
-                        if (radioText.includes(checkbox.id.toLowerCase())) {
+                        if (radioText.includes(checkbox.nextElementSibling.nextElementSibling.textContent.toLowerCase())) {
                             radio.parentElement.parentElement.hidden = false;
                         }
                     }
@@ -326,7 +326,7 @@ const insertFunction = function () {
                                               <li>${info.value}</li>`;
                     category.forEach(el => {
                         if (el.checked) {
-                            checkedCategories = `${checkedCategories} ${el.id.toLowerCase()},`;
+                            checkedCategories = `${checkedCategories} ${el.nextElementSibling.nextElementSibling.textContent.toLowerCase()},`;
                         }
                     })
                     receiver.forEach(radio => {
@@ -375,12 +375,12 @@ const sendData = () => {
         let data = document.querySelector("input[name=data]");
         let time = document.querySelector("input[name=time]");
         let info = document.querySelector("textarea");
-        let checkCategories = '';
+        let checkCategories = [];
         let organization = '';
 
         category.forEach(el => {
             if (el.checked) {
-                checkCategories = checkCategories + el.id.toLowerCase() + ' ';
+                checkCategories.push(el.id);
             }
         })
         receiver.forEach(radio => {
@@ -391,7 +391,7 @@ const sendData = () => {
 
         const jsonData = {
             quantity: bags.value,
-            categories: checkCategories.slice(0, -1),
+            categories: checkCategories,
             receiver: organization,
             address: adress.value,
             city: city.value,
@@ -420,10 +420,6 @@ const sendData = () => {
             .catch((error) => {
                 console.error('Error:', error);
             });
-        // fetch('http://127.0.0.1:8000/donation/')
-        //     .then(response => response.json())
-        //     .then((data => console.log(data)))
-
     })
 }
 
