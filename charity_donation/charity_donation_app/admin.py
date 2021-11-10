@@ -7,15 +7,12 @@ from charity_donation_app.models import Institution, Category
 class CustomUserAdmin(admin.ModelAdmin):
     list_display = ['email', 'first_name', 'last_name', 'is_staff']
 
-class CategoryInline(admin.TabularInline):
-    model = Institution.categories.through
+
 
 @admin.register(Institution)
 class InstitutionAdminm(admin.ModelAdmin):
-    list_display = ['name', 'type', 'description']
-    inlines = [
-        CategoryInline
-    ]
+    list_display = ['name', 'type','description']
+
 
 
 

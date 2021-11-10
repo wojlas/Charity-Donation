@@ -4,7 +4,7 @@ from datetime import datetime
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Count
+from django.db.models import Count, Sum
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
@@ -21,7 +21,8 @@ class IndexView(View):
     Informations about organizations, how it work, statistics and more"""
 
     def get(self, request):
-        ctx = {'bags': Donation.objects.all().annotate(Count('quantity', distinct=True)),
+        bags = Donation.objects.aggregate(Sum('categories'))
+        ctx = {'bags': bags['categories__sum'],
                'institutions': Donation.objects.values('institution').distinct(),
                'fundations': Institution.objects.filter(type='fundation'),
                'no_gov': Institution.objects.filter(type='NGO'),
@@ -122,7 +123,7 @@ class LogoutView(View):
 class UserProfileView(View):
     """Profile page"""
     def get(self, request):
-        ctx = {'donations': Donation.objects.filter(user=request.user).order_by('is_taken', 'pick_up_date', '-pick_up_time')}
+        ctx = {'donations': Donation.objects.filter(user=request.user).order_by('is_taken', 'pick_up_date', 'pick_up_time')}
         return render(request, 'charity_donation_app/profile.html', ctx)
 
     def post(self, request):
@@ -135,7 +136,8 @@ class UserProfileView(View):
         donation.save()
         return JsonResponse({'data': 'redirect'})
 
-class UserSettingsView(View):
+class UserSettingsView(LoginRequiredMixin, View):
+    login_url = '/login/'
     def get(self, request):
         return render(request, 'charity_donation_app/settings.html')
 

@@ -423,8 +423,6 @@ const sendData = () => {
     })
 }
 
-sendData()
-
 
 const donationArchiveFunc = function () {
     let table = document.querySelector(".donation-history").children[2].firstElementChild;
@@ -467,3 +465,47 @@ const archiveMark = function () {
 
 
 archiveMark()
+
+const passwordWalidator = function () {
+    const password1 = document.querySelector("input[name=password]");
+    const password2 = document.querySelector("input[name=password2]");
+    const submitButton = document.querySelector(".form-group--buttons").lastElementChild;
+    const reg = new RegExp("^([^0-9]*|[^A-Z]*|[^a-z]*|[a-zA-Z0-9]*)$");
+
+    const buttonDisactivated = function () {
+        submitButton.addEventListener("click", e => {
+            e.preventDefault();
+        })
+    }
+
+    password1.addEventListener("keyup", () => {
+        if (password1.value.length >= 8) {
+            if (!reg.test(password1.value)) {
+                password1.nextElementSibling.innerHTML = '';
+            } else {
+                password1.nextElementSibling.innerHTML = 'Hasło musi zawierać wielką i małą literę, liczbę i znak specjalny';
+                password1.nextElementSibling.style.color = 'red';
+                buttonDisactivated();
+            }
+        } else {
+            password1.nextElementSibling.innerHTML = 'Hasło musi mieć minimum 8 znaków';
+            password1.nextElementSibling.style.color = 'red';
+            buttonDisactivated();
+        }
+    })
+
+    password2.addEventListener("keyup", () => {
+        if (password2.value === null) {
+            buttonDisactivated();
+        }
+        if (password1.value === password2.value) {
+            password2.nextElementSibling.innerHTML = '';
+        } else {
+            password2.nextElementSibling.innerHTML = 'Hasła nie są takie same';
+            password2.nextElementSibling.style.color = 'red';
+            buttonDisactivated();
+        }
+    })
+}
+
+passwordWalidator()
