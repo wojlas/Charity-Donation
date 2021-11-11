@@ -363,6 +363,8 @@ const insertFunction = function () {
 insertFunction()
 
 const sendData = () => {
+    // function make json file and send it to backend
+    //after save donation in db we are redirected to confirmation site
     let submitBtn = document.querySelector("button[type=submit]");
     submitBtn.addEventListener("click", () => {
         let bags = document.querySelector("input[name=bags]");
@@ -425,6 +427,7 @@ const sendData = () => {
 
 
 const donationArchiveFunc = function () {
+    //after click on the Archive button, js send this action to backend and refresh site//
     let table = document.querySelector(".donation-history").children[2].firstElementChild;
     let button = table.querySelector("button");
     let buttonRow = button.parentElement.parentElement;
@@ -453,6 +456,7 @@ const donationArchiveFunc = function () {
 }
 
 const archiveMark = function () {
+    //Archive donations has diffrent bg color//
     let archiveRow = document.querySelectorAll(".taken");
     archiveRow.forEach(row => {
         let cell = row.querySelectorAll("td");
@@ -467,6 +471,10 @@ const archiveMark = function () {
 archiveMark()
 
 const passwordWalidator = function () {
+    //function check force of our password
+    //password must be longer then 8 marks and have big and small letter, number and special mark
+    //in password confirmation field function checks if passwords are the same
+    //when passwords are incorrect function will turn off submit button
     const password1 = document.querySelector("input[name=password]");
     const password2 = document.querySelector("input[name=password2]");
     const submitButton = document.querySelector(".form-group--buttons").lastElementChild;
@@ -488,7 +496,7 @@ const passwordWalidator = function () {
                 buttonDisactivated();
             }
         } else {
-            password1.nextElementSibling.innerHTML = 'Hasło musi mieć minimum 8 znaków';
+            password1.nextElementSibling.innerHTML = 'Hasło musi zawierać wielką i małą literę, liczbę i znak specjalny oraz mieć minimum 8 znaków';
             password1.nextElementSibling.style.color = 'red';
             buttonDisactivated();
         }
